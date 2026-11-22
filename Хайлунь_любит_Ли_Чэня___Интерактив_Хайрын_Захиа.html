@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Хайлунь любит Ли Чэня. — Интерактивное письмо</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts with full Cyrillic support -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Marck+Script&family=Montserrat:wght@300;400;500;600&family=Press+Start+2P&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg-deep: #180710;
+      --bg-velvet: #2b0c1b;
+      --berry-crimson: #9e1938;
+      --raspberry-glow: #e11d48;
+      --orchid-pearl: #fff5f8;
+      --orchid-blush: #f9c6d7;
+      --gold-warm: #e6be74;
+      --parchment-light: #fffaf5;
+      --parchment-shadow: #f3e4d8;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100vh;
+      overflow-x: hidden;
+      background: radial-gradient(circle at 50% 25%, #381024 0%, #1d0813 55%, #0f0309 100%);
+      color: #fff5f8;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    /* Typography helpers */
+    .font-calligraphy {
+      font-family: 'Marck Script', cursive;
+    }
+    .font-serif-elegant {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+    }
+    .font-pixel {
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    /* Fullscreen Raspberry & Sparkle Canvas */
+    #raspberry-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Ambient floating bokeh orbs */
+    .bokeh-orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(55px);
+      opacity: 0.28;
+      pointer-events: none;
+      z-index: 0;
+      animation: floatOrb 16s ease-in-out infinite alternate;
+    }
+    @keyframes floatOrb {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      100% { transform: translate3d(35px, -45px, 0) scale(1.18); }
+    }
+
+    /* =========================================================
+       INTRO SCREEN: HYPER-REALISTIC BLOOMING ORCHID
+       ========================================================= */
+    #intro-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 45%, rgba(49, 13, 31, 0.94) 0%, rgba(16, 4, 10, 0.98) 100%);
+      backdrop-filter: blur(10px);
+      transition: opacity 1.3s cubic-bezier(0.22, 1, 0.36, 1), visibility 1.3s ease;
+      padding: 1.25rem;
+    }
+
+    #intro-overlay.hidden-intro {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .orchid-stage {
+      position: relative;
+      width: min(88vw, 430px);
+      height: min(88vw, 430px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      filter: drop-shadow(0 25px 45px rgba(0, 0, 0, 0.65));
+    }
+
+    .orchid-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    /* Realistic Orchid Petal Blooming Kinematics */
+    .orchid-petal-group {
+      transform-origin: 250px 255px;
+      transition: transform 2.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 1.8s ease;
+    }
+
+    /* Initial closed bud state */
+    .orchid-bud .petal-dorsal {
+      transform: scale(0.42) translateY(38px) rotate(0deg);
+      opacity: 0.85;
+    }
+    .orchid-bud .petal-lateral-left {
+      transform: scale(0.38) rotate(36deg) translate(25px, 28px);
+      opacity: 0.82;
+    }
+    .orchid-bud .petal-lateral-right {
+      transform: scale(0.38) rotate(-36deg) translate(-25px, 28px);
+      opacity: 0.82;
+    }
+    .orchid-bud .sepal-bottom-left {
+      transform: scale(0.36) rotate(-28deg) translate(18px, -12px);
+      opacity: 0.8;
+    }
+    .orchid-bud .sepal-bottom-right {
+      transform: scale(0.36) rotate(28deg) translate(-18px, -12px);
+      opacity: 0.8;
+    }
+    .orchid-bud .orchid-labellum {
+      transform: scale(0.32) translateY(15px);
+      opacity: 0.7;
+    }
+    .orchid-bud .dewdrop {
+      opacity: 0;
+      transform: scale(0);
+    }
+
+    /* Full Bloom State */
+    .orchid-bloomed .petal-dorsal {
+      transform: scale(1) translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    .orchid-bloomed .petal-lateral-left {
+      transform: scale(1) rotate(0deg) translate(0, 0);
+      opacity: 1;
+      transition-delay: 0.15s;
+    }
+    .orchid-bloomed .petal-lateral-right {
+      transform: scale(1) rotate(0deg) translate(0, 0);
+      opacity: 1;
+      transition-delay: 0.15s;
+    }
+    .orchid-bloomed .sepal-bottom-left {
+      transform: scale(1) rotate(0deg) translate(0, 0);
+      opacity: 1;
+      transition-delay: 0.25s;
+    }
+    .orchid-bloomed .sepal-bottom-right {
+      transform: scale(1) rotate(0deg) translate(0, 0);
+      opacity: 1;
+      transition-delay: 0.25s;
+    }
+    .orchid-bloomed .orchid-labellum {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      transition-delay: 0.45s;
+    }
+    .orchid-bloomed .dewdrop {
+      opacity: 0.92;
+      transform: scale(1);
+      transition: opacity 1.5s ease 1.4s, transform 1.5s ease 1.4s;
+    }
+
+    /* Gentle living breath once bloomed */
+    @keyframes orchidBreathe {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.022) rotate(0.6deg); }
+    }
+    .orchid-living {
+      animation: orchidBreathe 6s ease-in-out infinite;
+    }
+
+    /* Glowing shimmer button */
+    .btn-romantic {
+      background: linear-gradient(135deg, #b81d43 0%, #7d112d 50%, #a6193c 100%);
+      border: 1px solid rgba(230, 190, 116, 0.55);
+      box-shadow: 0 10px 30px rgba(225, 29, 72, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.35);
+      transition: all 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .btn-romantic:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 15px 38px rgba(225, 29, 72, 0.65), 0 0 20px rgba(230, 190, 116, 0.4);
+    }
+    .btn-romantic:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================================
+       MAIN SCENE & PIXEL CHIBI DOLLS
+       ========================================================= */
+    #main-content {
+      position: relative;
+      z-index: 10;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+    #main-content.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .title-glow {
+      text-shadow:
+        0 0 18px rgba(244, 114, 182, 0.55),
+        0 0 38px rgba(225, 29, 72, 0.4),
+        0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Pixel Doll Animations */
+    @keyframes pixelIdle {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-6px); }
+    }
+    @keyframes pixelIdleDelay {
+      0%, 100% { transform: translateY(-3px); }
+      50% { transform: translateY(3px); }
+    }
+    @keyframes pixelHeartFloat {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-8px) scale(1.16); }
+    }
+    @keyframes chibiJump {
+      0% { transform: translateY(0) scale(1, 1); }
+      30% { transform: translateY(-18px) scale(0.95, 1.06); }
+      60% { transform: translateY(0) scale(1.06, 0.94); }
+      100% { transform: translateY(0) scale(1, 1); }
+    }
+
+    .chibi-tian {
+      animation: pixelIdle 2.4s steps(2, end) infinite;
+      cursor: pointer;
+    }
+    .chibi-yang {
+      animation: pixelIdleDelay 2.4s steps(2, end) infinite;
+      cursor: pointer;
+    }
+    .chibi-jump {
+      animation: chibiJump 0.55s ease-out !important;
+    }
+    .pixel-heart-beat {
+      animation: pixelHeartFloat 1.6s ease-in-out infinite;
+    }
+
+    .pixel-art-svg {
+      shape-rendering: crispEdges;
+      image-rendering: pixelated;
+    }
+
+    /* =========================================================
+       INTERACTIVE 3D ENVELOPE & LOVE LETTER
+       ========================================================= */
+    .envelope-container {
+      perspective: 1400px;
+      width: min(92vw, 480px);
+      margin: 0 auto;
+    }
+
+    .envelope-box {
+      position: relative;
+      width: 100%;
+      height: 290px;
+      background: linear-gradient(145deg, #f9e8ec 0%, #efd2da 100%);
+      border-radius: 16px;
+      box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.65),
+        0 0 0 1px rgba(230, 190, 116, 0.45),
+        inset 0 0 30px rgba(180, 70, 100, 0.14);
+      cursor: pointer;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s ease;
+      overflow: hidden;
+    }
+
+    .envelope-box:hover {
+      transform: translateY(-6px);
+      box-shadow:
+        0 32px 70px rgba(225, 29, 72, 0.35),
+        0 0 0 1.5px rgba(230, 190, 116, 0.8);
+    }
+
+    /* Inner pocket folds */
+    .envelope-pocket-left {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #f5dce2 0%, #e6c0cb 100%);
+      clip-path: polygon(0 0, 52% 52%, 0 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
+    .envelope-pocket-right {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(225deg, #f5dce2 0%, #e4bcc8 100%);
+      clip-path: polygon(100% 0, 48% 52%, 100% 100%);
+      z-index: 3;
+      pointer-events: none;
+    }
+    .envelope-pocket-bottom {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, #dfb3c0 0%, #f7e2e7 100%);
+      clip-path: polygon(0 100%, 50% 46%, 100% 100%);
+      z-index: 4;
+      box-shadow: 0 -4px 12px rgba(110, 30, 55, 0.12);
+      pointer-events: none;
+    }
+
+    /* Top Flap */
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 62%;
+      background: linear-gradient(180deg, #fae8ed 0%, #e5bcc8 100%);
+      clip-path: polygon(0 0, 100% 0, 50% 96%);
+      transform-origin: top center;
+      transition: transform 0.9s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.4s;
+      z-index: 5;
+      filter: drop-shadow(0 6px 10px rgba(85, 20, 40, 0.2));
+    }
+
+    .envelope-box.opened .envelope-flap {
+      transform: rotateX(180deg);
+      z-index: 1;
+    }
+
+    /* Preview card peeking inside envelope */
+    .envelope-letter-peek {
+      position: absolute;
+      left: 7%;
+      right: 7%;
+      bottom: 12px;
+      height: 82%;
+      background: #fffaf4;
+      border-radius: 10px;
+      padding: 18px;
+      z-index: 2;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+      transition: transform 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.25s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      border: 1px solid rgba(212, 175, 115, 0.4);
+    }
+
+    .envelope-box.opened .envelope-letter-peek {
+      transform: translateY(-75px);
+    }
+
+    /* Wax Seal */
+    .wax-seal {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 74px;
+      height: 74px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #d9264e 0%, #8f112e 65%, #5c081c 100%);
+      box-shadow:
+        0 8px 20px rgba(60, 5, 20, 0.55),
+        inset 0 2px 4px rgba(255, 190, 205, 0.5),
+        inset 0 -3px 6px rgba(40, 2, 12, 0.7);
+      z-index: 6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.6s ease, opacity 0.5s ease;
+      border: 2px solid rgba(230, 190, 116, 0.45);
+    }
+
+    .envelope-box:hover .wax-seal {
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+
+    .envelope-box.opened .wax-seal {
+      transform: translate(-50%, -50%) scale(1.35);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Expanded Parchment Letter Modal / Card */
+    #letter-paper-wrapper {
+      display: none;
+      opacity: 0;
+      transform: translateY(30px) scale(0.96);
+      transition: opacity 0.85s ease, transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    #letter-paper-wrapper.revealed {
+      display: block;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .parchment-sheet {
+      position: relative;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 232, 238, 0.65) 0%, transparent 45%),
+        radial-gradient(circle at 85% 90%, rgba(246, 224, 196, 0.55) 0%, transparent 45%),
+        linear-gradient(180deg, #fffcf9 0%, #fdf5ee 50%, #faede3 100%);
+      color: #2f131e;
+      border-radius: 20px;
+      border: 1px solid rgba(214, 168, 102, 0.55);
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(225, 29, 72, 0.18),
+        inset 0 0 50px rgba(218, 175, 130, 0.22);
+    }
+
+    .letter-paragraph {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-size: clamp(1.14rem, 2.2vw, 1.32rem);
+      line-height: 1.78;
+      color: #2b101b;
+      margin-bottom: 1.25rem;
+      text-align: left;
+    }
+
+    .letter-opening {
+      font-family: 'Marck Script', cursive;
+      font-size: clamp(1.75rem, 3.6vw, 2.35rem);
+      color: #9e1938;
+      line-height: 1.35;
+      margin-bottom: 1.5rem;
+    }
+
+    /* =========================================================
+       FLOATING MUSIC PLAYER ("Gangaa - Hurtlee")
+       ========================================================= */
+    .music-widget {
+      background: rgba(32, 10, 21, 0.82);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(230, 190, 116, 0.4);
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.55);
+    }
+
+    @keyframes spinVinyl {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .vinyl-spinning {
+      animation: spinVinyl 6s linear infinite;
+    }
+
+    .eq-bar {
+      width: 3px;
+      border-radius: 99px;
+      background: linear-gradient(to top, #e11d48, #f5d08a);
+      transition: height 0.2s ease;
+    }
+    .playing .eq-bar:nth-child(1) { animation: eqBounce 0.7s ease-in-out infinite alternate; }
+    .playing .eq-bar:nth-child(2) { animation: eqBounce 0.5s ease-in-out 0.15s infinite alternate; }
+    .playing .eq-bar:nth-child(3) { animation: eqBounce 0.85s ease-in-out 0.3s infinite alternate; }
+    .playing .eq-bar:nth-child(4) { animation: eqBounce 0.6s ease-in-out 0.1s infinite alternate; }
+
+    @keyframes eqBounce {
+      0% { height: 4px; }
+      100% { height: 16px; }
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #16060e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #7c1934;
+      border-radius: 999px;
+    }
+  </style>
+</head>
+<body class="selection:bg-rose-500 selection:text-white">
+
+  <!-- Ambient Soft Bokeh Lights -->
+  <div class="bokeh-orb w-80 h-80 bg-rose-600 top-10 -left-20"></div>
+  <div class="bokeh-orb w-96 h-96 bg-pink-500 bottom-10 -right-24" style="animation-delay: -5s;"></div>
+  <div class="bokeh-orb w-72 h-72 bg-amber-400 top-1/2 left-1/3" style="animation-delay: -9s; opacity: 0.14;"></div>
+
+  <!-- Fullscreen Realistic Floating Raspberries (Малина) Canvas -->
+  <canvas id="raspberry-canvas"></canvas>
+
+  <!-- Hidden YouTube Container for "Gangaa - Hurtlee" -->
+  <div id="yt-hidden-player" class="fixed -left-[9999px] -top-[9999px] w-1 h-1 opacity-0 pointer-events-none"></div>
+
+  <!-- =========================================================
+       1. OPENING SCENE: HYPER-REALISTIC BLOOMING ORCHID
+       ========================================================= -->
+  <section id="intro-overlay" aria-label="Цахирмаа цэцэг дэлбээлэх хэсэг">
+    <div class="text-center mb-3 z-10 px-4">
+      <span class="inline-block text-xs uppercase tracking-[0.28em] text-amber-200/80 mb-1">
+        Для самого дорогого сердца
+      </span>
+      <h2 class="font-calligraphy text-3xl sm:text-4xl text-pink-100 title-glow">
+        Распускается нежная орхидея…
+      </h2>
+    </div>
+
+    <!-- Interactive Realistic Botanical Phalaenopsis Orchid SVG -->
+    <div id="orchid-stage" class="orchid-stage orchid-bud" title="Нажмите на цветок">
+      <svg id="orchid-svg" class="orchid-svg" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <!-- Realistic Silky Petal Radial & Linear Gradients -->
+          <radialGradient id="dorsalGrad" cx="50%" cy="68%" r="65%">
+            <stop offset="0%" stop-color="#ffdbe8" />
+            <stop offset="35%" stop-color="#fff4f8" />
+            <stop offset="78%" stop-color="#fce3ec" />
+            <stop offset="100%" stop-color="#e89cb8" />
+          </radialGradient>
+
+          <radialGradient id="lateralGradLeft" cx="72%" cy="52%" r="72%">
+            <stop offset="0%" stop-color="#f7b3cc" />
+            <stop offset="28%" stop-color="#fff6f9" />
+            <stop offset="75%" stop-color="#fde6ef" />
+            <stop offset="100%" stop-color="#df86a7" />
+          </radialGradient>
+
+          <radialGradient id="lateralGradRight" cx="28%" cy="52%" r="72%">
+            <stop offset="0%" stop-color="#f7b3cc" />
+            <stop offset="28%" stop-color="#fff6f9" />
+            <stop offset="75%" stop-color="#fde6ef" />
+            <stop offset="100%" stop-color="#df86a7" />
+          </radialGradient>
+
+          <linearGradient id="bottomSepalGrad" x1="50%" y1="0%" x2="50%" y2="100%">
+            <stop offset="0%" stop-color="#f3a6c3" />
+            <stop offset="45%" stop-color="#fff2f6" />
+            <stop offset="100%" stop-color="#d8799d" />
+          </linearGradient>
+
+          <!-- Velvety Deep Berry-Magenta Labellum (Lip) -->
+          <radialGradient id="lipCenterGrad" cx="50%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#ffcf70" />
+            <stop offset="32%" stop-color="#e11d48" />
+            <stop offset="72%" stop-color="#880e2f" />
+            <stop offset="100%" stop-color="#4a0417" />
+          </radialGradient>
+
+          <linearGradient id="stemGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#224529" />
+            <stop offset="50%" stop-color="#457a4e" />
+            <stop offset="100%" stop-color="#1b3821" />
+          </linearGradient>
+
+          <!-- Soft realistic drop shadow between overlapping petals -->
+          <filter id="petalDepth" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#3b0718" flood-opacity="0.32" />
+          </filter>
+
+          <!-- Translucent Dewdrop Gradient -->
+          <radialGradient id="dewGrad" cx="35%" cy="30%" r="70%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95" />
+            <stop offset="45%" stop-color="#ffeef5" stop-opacity="0.45" />
+            <stop offset="85%" stop-color="#c96b8e" stop-opacity="0.35" />
+            <stop offset="100%" stop-color="#ffffff" stop-opacity="0.8" />
+          </radialGradient>
+        </defs>
+
+        <!-- Botanical Curved Orchid Stem & Unopened Small Buds -->
+        <path d="M 255 495 C 242 415, 265 340, 250 262" fill="none" stroke="url(#stemGrad)" stroke-width="8" stroke-linecap="round" />
+        <path d="M 251 395 C 215 375, 192 365, 176 355" fill="none" stroke="url(#stemGrad)" stroke-width="4.5" stroke-linecap="round" />
+        <!-- Side little orchid bud -->
+        <ellipse cx="170" cy="352" rx="13" ry="9" transform="rotate(-22 170 352)" fill="#e79ab7" />
+        <path d="M 158 355 Q 170 344 182 350" fill="none" stroke="#9e355b" stroke-width="1.2" opacity="0.6" />
+
+        <!-- 1. BOTTOM LEFT & RIGHT SEPALS (Back layer) -->
+        <g class="orchid-petal-group sepal-bottom-left" filter="url(#petalDepth)">
+          <path d="M 248 258 C 205 280, 155 345, 178 408 C 196 442, 240 412, 250 342 C 254 308, 252 278, 248 258 Z"
+                fill="url(#bottomSepalGrad)" stroke="#e799b6" stroke-width="0.8" />
+          <!-- Botanical delicate veins -->
+          <path d="M 245 270 C 215 315, 192 360, 184 405 M 242 285 C 224 330, 212 372, 206 410 M 238 275 C 200 308, 180 345, 176 382"
+                fill="none" stroke="#c95d84" stroke-width="0.9" opacity="0.32" />
+        </g>
+
+        <g class="orchid-petal-group sepal-bottom-right" filter="url(#petalDepth)">
+          <path d="M 252 258 C 295 280, 345 345, 322 408 C 304 442, 260 412, 250 342 C 246 308, 248 278, 252 258 Z"
+                fill="url(#bottomSepalGrad)" stroke="#e799b6" stroke-width="0.8" />
+          <path d="M 255 270 C 285 315, 308 360, 316 405 M 258 285 C 276 330, 288 372, 294 410 M 262 275 C 300 308, 320 345, 324 382"
+                fill="none" stroke="#c95d84" stroke-width="0.9" opacity="0.32" />
+        </g>
+
+        <!-- 2. TOP DORSAL SEPAL -->
+        <g class="orchid-petal-group petal-dorsal" filter="url(#petalDepth)">
+          <path d="M 250 255 C 205 215, 185 135, 224 85 C 240 65, 260 65, 276 85 C 315 135, 295 215, 250 255 Z"
+                fill="url(#dorsalGrad)" stroke="#eba2bd" stroke-width="0.8" />
+          <!-- Fine translucent veining -->
+          <path d="M 250 245 L 250 76 M 246 235 C 228 185, 222 135, 232 84 M 254 235 C 272 185, 278 135, 268 84 M 242 225 C 214 180, 206 140, 216 98 M 258 225 C 286 180, 294 140, 284 98"
+                fill="none" stroke="#c7547d" stroke-width="0.85" opacity="0.28" />
+          <!-- Realistic Dewdrop on Dorsal Petal -->
+          <circle class="dewdrop" cx="233" cy="134" r="4.5" fill="url(#dewGrad)" />
+        </g>
+
+        <!-- 3. WIDE VELVETY LATERAL PETALS (Left & Right Wings) -->
+        <g class="orchid-petal-group petal-lateral-left" filter="url(#petalDepth)">
+          <path d="M 248 255 C 210 205, 125 162, 74 205 C 34 238, 48 308, 108 326 C 165 342, 222 302, 248 255 Z"
+                fill="url(#lateralGradLeft)" stroke="#e798b5" stroke-width="0.9" />
+          <!-- Delicate organic petal veins -->
+          <path d="M 240 255 C 185 232, 125 224, 64 242 M 235 248 C 180 212, 128 195, 82 204 M 236 263 C 182 256, 130 264, 78 286 M 232 272 C 185 282, 145 298, 105 318"
+                fill="none" stroke="#c44d78" stroke-width="0.9" opacity="0.3" />
+          <circle class="dewdrop" cx="126" cy="264" r="5.2" fill="url(#dewGrad)" />
+          <circle class="dewdrop" cx="114" cy="276" r="2.6" fill="url(#dewGrad)" />
+        </g>
+
+        <g class="orchid-petal-group petal-lateral-right" filter="url(#petalDepth)">
+          <path d="M 252 255 C 290 205, 375 162, 426 205 C 466 238, 452 308, 392 326 C 335 342, 278 302, 252 255 Z"
+                fill="url(#lateralGradRight)" stroke="#e798b5" stroke-width="0.9" />
+          <path d="M 260 255 C 315 232, 375 224, 436 242 M 265 248 C 320 212, 372 195, 418 204 M 264 263 C 318 256, 370 264, 422 286 M 268 272 C 315 282, 355 298, 395 318"
+                fill="none" stroke="#c44d78" stroke-width="0.9" opacity="0.3" />
+          <circle class="dewdrop" cx="372" cy="236" r="4.2" fill="url(#dewGrad)" />
+        </g>
+
+        <!-- 4. INTRICATE ORCHID LABELLUM (LIP) & GOLDEN THROAT -->
+        <g class="orchid-petal-group orchid-labellum" filter="url(#petalDepth)">
+          <!-- Side wings of the lip -->
+          <path d="M 250 256 C 218 236, 196 254, 206 282 C 214 302, 236 296, 250 278 C 264 296, 286 302, 294 282 C 304 254, 282 236, 250 256 Z"
+                fill="url(#lipCenterGrad)" />
+          <!-- Central tongue / apron with curled tendrils -->
+          <path d="M 250 264 C 228 276, 218 308, 232 332 C 240 344, 245 348, 236 364 C 244 358, 249 348, 250 338 C 251 348, 256 358, 264 364 C 255 348, 260 344, 268 332 C 282 308, 272 276, 250 264 Z"
+                fill="url(#lipCenterGrad)" stroke="#ff9ebb" stroke-width="0.6" />
+          <!-- Tiger-like golden & crimson speckles inside throat -->
+          <circle cx="241" cy="272" r="2" fill="#ffd97d" />
+          <circle cx="259" cy="272" r="2" fill="#ffd97d" />
+          <circle cx="236" cy="282" r="1.7" fill="#ffbe55" />
+          <circle cx="264" cy="282" r="1.7" fill="#ffbe55" />
+          <circle cx="245" cy="288" r="1.5" fill="#ffe7a3" />
+          <circle cx="255" cy="288" r="1.5" fill="#ffe7a3" />
+          <!-- Pearl-white column (heart of the orchid) -->
+          <ellipse cx="250" cy="256" rx="10" ry="13" fill="#fff7fa" />
+          <ellipse cx="250" cy="259" rx="5.5" ry="6.5" fill="#f7c868" />
+        </g>
+      </svg>
+    </div>
+
+    <div class="text-center mt-2 z-10 flex flex-col items-center gap-3">
+      <p id="bloom-status-text" class="text-sm sm:text-base text-pink-200/90 font-light tracking-wide">
+        Цахирмаа цэцэг дэлбээлж байна…
+      </p>
+      <button id="enter-letter-btn" class="btn-romantic px-8 py-3.5 rounded-full text-white font-medium tracking-wider text-sm sm:text-base flex items-center gap-2.5 opacity-0 translate-y-3 transition-all duration-700">
+        <span>Открыть письмо</span>
+        <span class="text-amber-200">✦</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       2. MAIN INTERACTIVE PORTFOLIO & LOVE LETTER EXPERIENCE
+       ========================================================= -->
+  <main id="main-content" class="min-h-screen w-full px-4 sm:px-6 pt-10 pb-28 flex flex-col items-center">
+
+    <!-- Top Delicate Botanical Divider & Title -->
+    <header class="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-amber-300/25 backdrop-blur-md text-xs tracking-[0.22em] uppercase text-amber-200/90 mb-4">
+        <span>❀</span>
+        <span>С любовью и нежностью</span>
+        <span>❀</span>
+      </div>
+
+      <h1 class="font-calligraphy text-4xl sm:text-6xl md:text-7xl text-transparent bg-clip-text bg-gradient-to-r from-pink-100 via-rose-200 to-amber-200 title-glow py-2 leading-tight">
+        Хайлунь любит Ли Чэня.
+      </h1>
+
+      <p class="mt-2 text-xs sm:text-sm text-pink-200/75 font-light tracking-widest uppercase">
+        Нажми на куколок или распечатай конверт ниже
+      </p>
+    </header>
+
+    <!-- =========================================================
+         3. CUTE ANIMATED PIXEL-ART CHIBI DOLLS (Tian Jiarui & Yang Yang)
+         ========================================================= -->
+    <section aria-label="Tian Jiarui и Yang Yang" class="w-full max-w-xl mx-auto mb-8">
+      <div class="relative rounded-3xl bg-white/[0.04] border border-pink-200/15 backdrop-blur-md px-4 py-5 sm:px-8 sm:py-6 shadow-2xl flex items-center justify-around gap-2">
+
+        <!-- DOLL 1: TIAN JIARUI (Pixel Chibi) -->
+        <div id="doll-tian" class="chibi-tian flex flex-col items-center group" title="Нажми на Tian Jiarui!">
+          <div class="relative">
+            <!-- Speech bubble on click -->
+            <span id="bubble-tian" class="opacity-0 transition-opacity duration-300 absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-rose-600/90 text-white text-[10px] px-2.5 py-0.5 rounded-full border border-amber-200/50 shadow">
+              Смущаюсь… ♡
+            </span>
+            <!-- 16x20 Crisp Pixel Art SVG for Tian Jiarui (Dark-crimson & silver prince aesthetic, expressive eyes) -->
+            <svg class="pixel-art-svg w-24 h-28 sm:w-28 sm:h-32 drop-shadow-[0_10px_14px_rgba(0,0,0,0.5)]" viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg">
+              <!-- Hair back & flowing locks -->
+              <rect x="4" y="1" width="8" height="2" fill="#18141c" />
+              <rect x="3" y="2" width="10" height="6" fill="#18141c" />
+              <rect x="2" y="4" width="2" height="7" fill="#18141c" />
+              <rect x="12" y="4" width="2" height="7" fill="#18141c" />
+              <!-- Silver hair ornament -->
+              <rect x="7" y="1" width="2" height="1" fill="#e6be74" />
+              <!-- Face skin -->
+              <rect x="4" y="4" width="8" height="6" fill="#ffe6d8" />
+              <!-- Hair bangs -->
+              <rect x="4" y="3" width="8" height="2" fill="#18141c" />
+              <rect x="5" y="5" width="1" height="1" fill="#18141c" />
+              <rect x="10" y="5" width="1" height="1" fill="#18141c" />
+              <!-- Expressive dark eyes + white catchlight -->
+              <rect x="5" y="6" width="2" height="2" fill="#1e1526" />
+              <rect x="9" y="6" width="2" height="2" fill="#1e1526" />
+              <rect x="5" y="6" width="1" height="1" fill="#ffffff" />
+              <rect x="9" y="6" width="1" height="1" fill="#ffffff" />
+              <!-- Cute rosy blush -->
+              <rect x="4" y="8" width="1" height="1" fill="#ff85a2" />
+              <rect x="11" y="8" width="1" height="1" fill="#ff85a2" />
+              <!-- Pouty / cute smile -->
+              <rect x="7" y="8" width="2" height="1" fill="#d95b76" />
+              <!-- Elegant Dark-Crimson & Silver Robe/Suit -->
+              <rect x="4" y="10" width="8" height="6" fill="#8f1636" />
+              <rect x="6" y="10" width="4" height="3" fill="#fff5f7" />
+              <rect x="7" y="10" width="2" height="6" fill="#c9244d" />
+              <!-- Silver/Gold Belt -->
+              <rect x="4" y="13" width="8" height="1" fill="#e6be74" />
+              <!-- Sleeves & Hands -->
+              <rect x="2" y="11" width="2" height="4" fill="#6e0e28" />
+              <rect x="12" y="11" width="2" height="4" fill="#6e0e28" />
+              <rect x="2" y="14" width="2" height="1" fill="#ffe6d8" />
+              <rect x="12" y="14" width="2" height="1" fill="#ffe6d8" />
+              <!-- Boots -->
+              <rect x="5" y="16" width="2" height="3" fill="#1c141d" />
+              <rect x="9" y="16" width="2" height="3" fill="#1c141d" />
+            </svg>
+          </div>
+          <span class="mt-1.5 px-3 py-1 rounded-full bg-rose-950/70 border border-rose-400/30 text-[11px] sm:text-xs font-medium text-pink-100 tracking-wide">
+            Tian Jiarui
+          </span>
+        </div>
+
+        <!-- CENTER FLOATING PIXEL HEARTS -->
+        <div class="flex flex-col items-center justify-center gap-2 px-1">
+          <svg class="pixel-art-svg pixel-heart-beat w-9 h-9 sm:w-11 sm:h-11 drop-shadow-[0_0_12px_rgba(244,63,94,0.85)]" viewBox="0 0 9 8" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="0" width="2" height="1" fill="#ff4d79" />
+            <rect x="6" y="0" width="2" height="1" fill="#ff4d79" />
+            <rect x="0" y="1" width="4" height="2" fill="#ff2a5f" />
+            <rect x="5" y="1" width="4" height="2" fill="#ff2a5f" />
+            <rect x="1" y="1" width="1" height="1" fill="#ffc2d1" />
+            <rect x="0" y="3" width="9" height="1" fill="#e11d48" />
+            <rect x="1" y="4" width="7" height="1" fill="#e11d48" />
+            <rect x="2" y="5" width="5" height="1" fill="#be123c" />
+            <rect x="3" y="6" width="3" height="1" fill="#be123c" />
+            <rect x="4" y="7" width="1" height="1" fill="#9f1239" />
+          </svg>
+          <span class="font-pixel text-[8px] sm:text-[9px] text-amber-200/85 tracking-tighter">
+            LOVE
+          </span>
+        </div>
+
+        <!-- DOLL 2: YANG YANG (Pixel Chibi) -->
+        <div id="doll-yang" class="chibi-yang flex flex-col items-center group" title="Нажми на Yang Yang!">
+          <div class="relative">
+            <span id="bubble-yang" class="opacity-0 transition-opacity duration-300 absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap bg-sky-600/90 text-white text-[10px] px-2.5 py-0.5 rounded-full border border-amber-200/50 shadow">
+              Всегда рядом ♥
+            </span>
+            <!-- 16x20 Crisp Pixel Art SVG for Yang Yang (Princely white & soft celestial-blue outfit, gentle smile) -->
+            <svg class="pixel-art-svg w-24 h-28 sm:w-28 sm:h-32 drop-shadow-[0_10px_14px_rgba(0,0,0,0.5)]" viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg">
+              <!-- Neat iconic dark hair -->
+              <rect x="4" y="1" width="8" height="2" fill="#151722" />
+              <rect x="3" y="2" width="10" height="5" fill="#151722" />
+              <!-- Face skin -->
+              <rect x="4" y="4" width="8" height="6" fill="#ffeadc" />
+              <!-- Side-swept bangs -->
+              <rect x="4" y="3" width="8" height="2" fill="#151722" />
+              <rect x="6" y="5" width="2" height="1" fill="#151722" />
+              <!-- Gentle warm eyes + sparkle -->
+              <rect x="5" y="6" width="2" height="2" fill="#181b29" />
+              <rect x="9" y="6" width="2" height="2" fill="#181b29" />
+              <rect x="6" y="6" width="1" height="1" fill="#ffffff" />
+              <rect x="10" y="6" width="1" height="1" fill="#ffffff" />
+              <!-- Soft blush -->
+              <rect x="4" y="8" width="1" height="1" fill="#ff94ad" />
+              <rect x="11" y="8" width="1" height="1" fill="#ff94ad" />
+              <!-- Gentle smile -->
+              <rect x="7" y="8" width="2" height="1" fill="#d4667d" />
+              <!-- Princely White & Celestial-Blue Outfit -->
+              <rect x="4" y="10" width="8" height="6" fill="#f8fafc" />
+              <rect x="5" y="10" width="6" height="6" fill="#e0f2fe" />
+              <rect x="7" y="10" width="2" height="5" fill="#7dd3fc" />
+              <!-- Gold & Jade Waist Sash -->
+              <rect x="4" y="13" width="8" height="1" fill="#e6be74" />
+              <rect x="7" y="13" width="2" height="2" fill="#38bdf8" />
+              <!-- Sleeves & Hands -->
+              <rect x="2" y="11" width="2" height="4" fill="#f1f5f9" />
+              <rect x="12" y="11" width="2" height="4" fill="#f1f5f9" />
+              <rect x="2" y="14" width="2" height="1" fill="#ffeadc" />
+              <rect x="12" y="14" width="2" height="1" fill="#ffeadc" />
+              <!-- Boots -->
+              <rect x="5" y="16" width="2" height="3" fill="#1e293b" />
+              <rect x="9" y="16" width="2" height="3" fill="#1e293b" />
+            </svg>
+          </div>
+          <span class="mt-1.5 px-3 py-1 rounded-full bg-slate-900/75 border border-sky-300/30 text-[11px] sm:text-xs font-medium text-sky-100 tracking-wide">
+            Yang Yang
+          </span>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         4. INTERACTIVE WAX-SEALED ENVELOPE & FULL LOVE LETTER
+         ========================================================= -->
+    <section aria-label="Любовное письмо" class="w-full max-w-3xl mx-auto">
+
+      <!-- Closed / Opening Interactive Envelope -->
+      <div id="envelope-wrapper" class="envelope-container my-4">
+        <div id="envelope-box" class="envelope-box" role="button" tabindex="0" aria-label="Нажмите, чтобы открыть конверт с письмом">
+          <!-- Inner letter preview card -->
+          <div class="envelope-letter-peek">
+            <span class="text-[11px] uppercase tracking-[0.25em] text-rose-800/70 mb-1">Личное послание</span>
+            <p class="font-calligraphy text-xl text-rose-900 text-center">
+              Моя сердитая, обидчивая и такая упрямая любовь…
+            </p>
+          </div>
+
+          <!-- Envelope 3D Flaps -->
+          <div class="envelope-flap"></div>
+          <div class="envelope-pocket-left"></div>
+          <div class="envelope-pocket-right"></div>
+          <div class="envelope-pocket-bottom"></div>
+
+          <!-- Embossed Wax Seal with Orchid Emblem -->
+          <div class="wax-seal" title="Нажмите, чтобы сломать печать">
+            <svg class="w-9 h-9 text-amber-200/90 drop-shadow" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+        </div>
+
+        <p class="text-center text-xs sm:text-sm text-pink-200/80 mt-4 animate-pulse">
+          ✨ Нажми на сургучную печать, чтобы открыть письмо ✨
+        </p>
+      </div>
+
+      <!-- Full Opened Parchment Love Letter -->
+      <article id="letter-paper-wrapper" class="mt-4">
+        <div class="parchment-sheet px-6 py-8 sm:px-12 sm:py-12 md:px-16 md:py-14">
+
+          <!-- Decorative Top Corner Orchid Watermark -->
+          <div class="flex items-center justify-between border-b border-rose-900/15 pb-4 mb-7">
+            <span class="text-xs uppercase tracking-[0.24em] text-rose-900/60 font-medium">
+              Хайлунь ❧ Ли Чэнь
+            </span>
+            <button id="close-letter-btn" class="text-xs px-3 py-1 rounded-full bg-rose-900/10 hover:bg-rose-900/20 text-rose-900 transition">
+              Свернуть конверт
+            </button>
+          </div>
+
+          <!-- EXACT VERBATIM RUSSIAN LOVE LETTER -->
+          <div class="letter-body">
+            <h2 class="letter-opening">
+              Моя сердитая, обидчивая и такая упрямая любовь…
+            </h2>
+
+            <p class="letter-paragraph">
+              Иногда, глядя на тебя, я невольно улыбаюсь. Потому что, каким бы сердитым, упрямым и обидчивым ты ни казался снаружи, внутри тебя живёт человек, который так искренне любит меня и так сильно обо мне переживает. Я очень ценю то, что даже когда обижен ты сам, ты прежде всего думаешь о моих чувствах; даже когда устаёшь, стараешься найти способ меня порадовать; и что бы ни случилось, ты всегда ставишь меня на первое место, даже порой забывая о себе.
+            </p>
+
+            <p class="letter-paragraph">
+              Когда я думаю о том, как ты боишься ненароком причинить мне боль, как иногда сдерживаешь свои слова, лишь бы не задеть моё сердце, как переживаешь всё внутри себя, только бы мне не было больно, — моё сердце наполняется такой нежностью к тебе. Но, любимый, ты ведь тоже заслуживаешь любви и заботы. Так же, как ты всегда думаешь обо мне, стараешься понять меня и оберегать, я тоже хочу понимать тебя, беречь твои чувства и разделять с тобой даже самые тяжёлые моменты.
+            </p>
+
+            <p class="letter-paragraph">
+              Тебе не обязательно всегда быть сильным. Не нужно справляться со всем в одиночку. Ты можешь злиться, когда тебе хочется злиться, обижаться, когда тебе больно, и опираться на меня, когда устаёшь. Я никогда не хотела, чтобы ты был идеальным. Я хочу любить тебя именно таким, какой ты есть: с твоим характером, упрямством и даже с теми моментами, когда ты сам не знаешь, на что обиделся.
+            </p>
+
+            <p class="letter-paragraph">
+              Знаешь ли ты, насколько дороги мне все те маленькие поступки, которыми ты стараешься сделать меня счастливой? Твой взгляд, которым ты всегда следишь за моим настроением, твоя забота, с которой ты не позволяешь мне чувствовать себя одинокой, и твоё желание оставаться на моей стороне, несмотря ни на что. Возможно, я не всегда говорю об этом вслух, но никогда не считала твою любовь чем-то незначительным.
+            </p>
+
+            <p class="letter-paragraph">
+              Я не прошу тебя всегда быть правым, никогда не сердиться или никогда не обижаться. Я лишь хочу, чтобы мы берегли сердца друг друга, разговаривали, когда что-то идёт не так, и продолжали выбирать друг друга даже в самые непростые дни.
+            </p>
+
+            <p class="letter-paragraph">
+              Моя самая сердитая, но такая нежная любовь, спасибо тебе за то, что так сильно меня любишь. Спасибо за то, что моя улыбка для тебя так важна, за то, что боишься причинить мне боль, за то, что даже когда тебе самому тяжело, ты всё равно стараешься сделать меня счастливой.
+            </p>
+
+            <p class="letter-paragraph">
+              Но ты не должен жить только ради моего счастья. Ты тоже заслуживаешь быть счастливым. Я люблю тебя не только за все старания, которые ты прилагаешь ради меня, но и просто за то, что ты — это ты.
+            </p>
+
+            <p class="letter-paragraph">
+              Моя упрямая любовь, ты заслуживаешь того, чтобы тебя любили, а не того, чтобы тебе приходилось постоянно жертвовать собой ради чужой любви. Я тоже хочу заботиться о тебе, радовать тебя, беречь твоё сердце и дарить тебе столько же нежности, сколько ты даришь мне.
+            </p>
+
+            <p class="letter-paragraph font-semibold text-rose-900 text-xl sm:text-2xl pt-2">
+              Я очень сильно тебя люблю. Сегодня, завтра и даже после наших маленьких недопониманий… ❤️
+            </p>
+          </div>
+
+          <!-- Interactive Heart Burst & Signature Footer -->
+          <div class="mt-8 pt-6 border-t border-rose-900/15 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="font-calligraphy text-2xl text-rose-800">
+              Навсегда твоя, Хайлунь
+            </div>
+
+            <button id="send-love-btn" class="btn-romantic px-6 py-3 rounded-full text-white text-sm font-medium flex items-center gap-2 shadow-lg">
+              <span>Отправить сердечко</span>
+              <span>❤️</span>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <!-- =========================================================
+       5. FLOATING BACKGROUND MUSIC WIDGET ("Gangaa - Hurtlee")
+       ========================================================= -->
+  <aside id="music-widget" class="music-widget fixed bottom-4 right-4 z-40 rounded-2xl px-3.5 py-2.5 flex items-center gap-3 max-w-[92vw]">
+    <!-- Spinning Vinyl Disc -->
+    <div id="vinyl-disc" class="w-10 h-10 rounded-full bg-gradient-to-tr from-neutral-950 via-rose-950 to-neutral-800 border border-amber-300/50 flex items-center justify-center shrink-0 shadow-inner">
+      <div class="w-3.5 h-3.5 rounded-full bg-rose-500 border border-amber-200"></div>
+    </div>
+
+    <!-- Track Info -->
+    <div class="min-w-0 pr-1">
+      <div class="flex items-center gap-1.5">
+        <span class="text-xs sm:text-sm font-semibold text-pink-50 truncate">Gangaa - Hurtlee</span>
+        <!-- Animated Equalizer -->
+        <div id="eq-bars" class="flex items-end gap-0.5 h-4 shrink-0">
+          <span class="eq-bar h-1.5"></span>
+          <span class="eq-bar h-2.5"></span>
+          <span class="eq-bar h-1"></span>
+          <span class="eq-bar h-2"></span>
+        </div>
+      </div>
+      <p id="music-status-label" class="text-[10px] text-amber-200/80 truncate">
+        Нажмите ▶ для музыки
+      </p>
+    </div>
+
+    <!-- Play / Pause Control -->
+    <button id="music-toggle-btn" aria-label="Воспроизвести или остановить музыку" class="w-9 h-9 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shrink-0 transition shadow">
+      <svg id="icon-play" class="w-4 h-4 ml-0.5" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      <svg id="icon-pause" class="w-4 h-4 hidden" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    </button>
+  </aside>
+
+  <!-- =========================================================
+       JAVASCRIPT: ORCHID BLOOM, REALISTIC RASPBERRIES, AUDIO & INTERACTIONS
+       ========================================================= -->
+  <script>
+    (function () {
+      /* ---------------------------------------------------------
+         1. REALISTIC BLOOMING ORCHID INTRO SEQUENCE
+         --------------------------------------------------------- */
+      const introOverlay = document.getElementById('intro-overlay');
+      const orchidStage = document.getElementById('orchid-stage');
+      const bloomStatus = document.getElementById('bloom-status-text');
+      const enterBtn = document.getElementById('enter-letter-btn');
+      const mainContent = document.getElementById('main-content');
+
+      let isBloomed = false;
+
+      function triggerOrchidBloom() {
+        if (isBloomed) return;
+        isBloomed = true;
+        orchidStage.classList.remove('orchid-bud');
+        orchidStage.classList.add('orchid-bloomed');
+
+        setTimeout(() => {
+          orchidStage.classList.add('orchid-living');
+          bloomStatus.textContent = 'Орхидея распустилась для тебя…';
+          enterBtn.classList.remove('opacity-0', 'translate-y-3');
+          enterBtn.classList.add('opacity-100', 'translate-y-0');
+        }, 1600);
+      }
+
+      // Automatically bloom gently 700ms after load, or immediately on tap
+      window.addEventListener('load', () => {
+        setTimeout(triggerOrchidBloom, 650);
+      });
+      orchidStage.addEventListener('click', triggerOrchidBloom);
+
+      function enterMainExperience() {
+        introOverlay.classList.add('hidden-intro');
+        mainContent.classList.add('visible');
+        // Attempt to start background music gracefully on user interaction
+        if (!isMusicPlaying) {
+          toggleMusic(true);
+        }
+      }
+
+      enterBtn.addEventListener('click', enterMainExperience);
+
+      /* ---------------------------------------------------------
+         2. HYPER-REALISTIC FLOATING RASPBERRIES (МАЛИНА) CANVAS
+         --------------------------------------------------------- */
+      const canvas = document.getElementById('raspberry-canvas');
+      const ctx = canvas.getContext('2d');
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      // Pre-render photorealistic Raspberry sprites onto offscreen canvases for buttery 60fps performance
+      function createRealisticRaspberrySprite(size) {
+        const off = document.createElement('canvas');
+        const pad = size * 0.35;
+        off.width = size + pad * 2;
+        off.height = size + pad * 2;
+        const c = off.getContext('2d');
+        const cx = off.width / 2;
+        const cy = off.height / 2 + size * 0.06;
+
+        // Soft ambient shadow beneath berry
+        c.save();
+        c.beginPath();
+        c.ellipse(cx, cy + size * 0.05, size * 0.36, size * 0.42, 0, 0, Math.PI * 2);
+        c.fillStyle = 'rgba(25, 2, 10, 0.35)';
+        c.filter = 'blur(6px)';
+        c.fill();
+        c.restore();
+
+        // Drupelet rows arranged in a natural tapered raspberry cone
+        const rows = [
+          { y: -0.26, count: 4, spread: 0.24, r: 0.115 },
+          { y: -0.13, count: 5, spread: 0.30, r: 0.125 },
+          { y:  0.01, count: 5, spread: 0.29, r: 0.128 },
+          { y:  0.15, count: 4, spread: 0.23, r: 0.122 },
+          { y:  0.28, count: 3, spread: 0.15, r: 0.115 },
+          { y:  0.38, count: 2, spread: 0.07, r: 0.105 }
+        ];
+
+        rows.forEach((row, rowIdx) => {
+          for (let i = 0; i < row.count; i++) {
+            const t = row.count === 1 ? 0 : (i / (row.count - 1)) * 2 - 1;
+            const stagger = (rowIdx % 2 === 0 ? 0.015 : -0.015) * size;
+            const dx = cx + t * row.spread * size + stagger;
+            const dy = cy + row.y * size;
+            const dr = row.r * size;
+
+            // Deep ruby-crimson spherical gradient per drupelet
+            const grad = c.createRadialGradient(
+              dx - dr * 0.32,
+              dy - dr * 0.35,
+              dr * 0.08,
+              dx,
+              dy,
+              dr
+            );
+            grad.addColorStop(0, '#ff6b8b');
+            grad.addColorStop(0.28, '#d91642');
+            grad.addColorStop(0.75, '#8c0b29');
+            grad.addColorStop(1, '#470314');
+
+            c.beginPath();
+            c.arc(dx, dy, dr, 0, Math.PI * 2);
+            c.fillStyle = grad;
+            c.fill();
+
+            // Subtle velvet rim light
+            c.strokeStyle = 'rgba(255, 175, 195, 0.24)';
+            c.lineWidth = Math.max(0.7, size * 0.012);
+            c.stroke();
+
+            // Crisp specular glossy highlight on each drupelet
+            c.beginPath();
+            c.ellipse(
+              dx - dr * 0.3,
+              dy - dr * 0.32,
+              dr * 0.28,
+              dr * 0.16,
+              -Math.PI / 5,
+              0,
+              Math.PI * 2
+            );
+            c.fillStyle = 'rgba(255, 240, 245, 0.72)';
+            c.fill();
+          }
+        });
+
+        // Fresh Green Leafy Calyx / Sepals on top of the Raspberry
+        const topY = cy - size * 0.33;
+        const leafAngles = [-1.15, -0.55, 0, 0.55, 1.15];
+        leafAngles.forEach((ang) => {
+          c.save();
+          c.translate(cx, topY);
+          c.rotate(ang);
+          const leafGrad = c.createLinearGradient(0, 0, 0, -size * 0.24);
+          leafGrad.addColorStop(0, '#27592d');
+          leafGrad.addColorStop(0.6, '#4d9454');
+          leafGrad.addColorStop(1, '#84c988');
+
+          c.beginPath();
+          c.moveTo(0, 0);
+          c.quadraticCurveTo(-size * 0.07, -size * 0.12, 0, -size * 0.25);
+          c.quadraticCurveTo(size * 0.07, -size * 0.12, 0, 0);
+          c.fillStyle = leafGrad;
+          c.fill();
+          c.restore();
+        });
+
+        return off;
+      }
+
+      const berrySprites = [
+        createRealisticRaspberrySprite(44),
+        createRealisticRaspberrySprite(64),
+        createRealisticRaspberrySprite(84)
+      ];
+
+      // Create floating raspberries & soft glowing petals
+      const berries = [];
+      const berryCount = window.innerWidth < 640 ? 13 : 22;
+
+      for (let i = 0; i < berryCount; i++) {
+        const depthTier = i % 3; // 0 = far/blurred, 1 = mid, 2 = foreground crisp
+        berries.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          vx: (Math.random() - 0.5) * (0.28 + depthTier * 0.12),
+          vy: -(0.22 + Math.random() * 0.35 + depthTier * 0.1),
+          rotation: Math.random() * Math.PI * 2,
+          vRot: (Math.random() - 0.5) * 0.008,
+          wobblePhase: Math.random() * Math.PI * 2,
+          scale: depthTier === 0 ? 0.58 : depthTier === 1 ? 0.85 : 1.12,
+          alpha: depthTier === 0 ? 0.45 : depthTier === 1 ? 0.72 : 0.92,
+          sprite: berrySprites[depthTier]
+        });
+      }
+
+      // Interactive heart burst particles on click
+      const burstHearts = [];
+
+      function spawnHeartBurst(x, y, count = 14) {
+        for (let i = 0; i < count; i++) {
+          const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.4;
+          const speed = 1.6 + Math.random() * 3.4;
+          burstHearts.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed - 1.2,
+            size: 10 + Math.random() * 11,
+            alpha: 1,
+            hue: Math.random() > 0.35 ? '#fb7185' : '#fcd34d'
+          });
+        }
+      }
+
+      function drawHeartShape(ctx, x, y, size, color, alpha) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, alpha);
+        ctx.fillStyle = color;
+        ctx.translate(x, y);
+        ctx.beginPath();
+        const s = size / 16;
+        ctx.moveTo(0, 4 * s);
+        ctx.bezierCurveTo(0, 0, -8 * s, 0, -8 * s, 5 * s);
+        ctx.bezierCurveTo(-8 * s, 9 * s, 0, 13 * s, 0, 15 * s);
+        ctx.bezierCurveTo(0, 13 * s, 8 * s, 9 * s, 8 * s, 5 * s);
+        ctx.bezierCurveTo(8 * s, 0, 0, 0, 0, 4 * s);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function animateCanvas() {
+        ctx.clearRect(0, 0, width, height);
+
+        // Render floating photorealistic raspberries
+        for (const b of berries) {
+          b.wobblePhase += 0.015;
+          b.x += b.vx + Math.sin(b.wobblePhase) * 0.25;
+          b.y += b.vy;
+          b.rotation += b.vRot;
+
+          // Wrap smoothly around edges
+          const margin = 90;
+          if (b.y < -margin) {
+            b.y = height + margin;
+            b.x = Math.random() * width;
+          }
+          if (b.x < -margin) b.x = width + margin;
+          if (b.x > width + margin) b.x = -margin;
+
+          ctx.save();
+          ctx.globalAlpha = b.alpha;
+          ctx.translate(b.x, b.y);
+          ctx.rotate(b.rotation);
+          ctx.scale(b.scale, b.scale);
+          ctx.drawImage(
+            b.sprite,
+            -b.sprite.width / 2,
+            -b.sprite.height / 2
+          );
+          ctx.restore();
+        }
+
+        // Render interactive heart bursts
+        for (let i = burstHearts.length - 1; i >= 0; i--) {
+          const h = burstHearts[i];
+          h.x += h.vx;
+          h.y += h.vy;
+          h.vy += 0.04; // gentle gravity
+          h.alpha -= 0.016;
+          if (h.alpha <= 0) {
+            burstHearts.splice(i, 1);
+          } else {
+            drawHeartShape(ctx, h.x, h.y, h.size, h.hue, h.alpha);
+          }
+        }
+
+        requestAnimationFrame(animateCanvas);
+      }
+      animateCanvas();
+
+      /* ---------------------------------------------------------
+         3. PIXEL CHIBI DOLLS INTERACTIONS (Tian Jiarui & Yang Yang)
+         --------------------------------------------------------- */
+      const dollTian = document.getElementById('doll-tian');
+      const dollYang = document.getElementById('doll-yang');
+      const bubbleTian = document.getElementById('bubble-tian');
+      const bubbleYang = document.getElementById('bubble-yang');
+
+      const tianPhrases = ['Смущаюсь… ♡', 'Не злись на меня!', 'Люблю тебя ♥', 'Ты моё счастье ✨'];
+      const yangPhrases = ['Всегда рядом ♥', 'Берегу твоё сердце', 'Улыбнись мне ♡', 'Только ты ✨'];
+
+      function interactWithDoll(dollEl, bubbleEl, phrases, event) {
+        dollEl.classList.remove('chibi-jump');
+        void dollEl.offsetWidth; // trigger reflow
+        dollEl.classList.add('chibi-jump');
+
+        bubbleEl.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+        bubbleEl.style.opacity = '1';
+        clearTimeout(bubbleEl._timer);
+        bubbleEl._timer = setTimeout(() => {
+          bubbleEl.style.opacity = '0';
+        }, 2000);
+
+        const rect = dollEl.getBoundingClientRect();
+        spawnHeartBurst(rect.left + rect.width / 2, rect.top + 20, 10);
+      }
+
+      dollTian.addEventListener('click', (e) => interactWithDoll(dollTian, bubbleTian, tianPhrases, e));
+      dollYang.addEventListener('click', (e) => interactWithDoll(dollYang, bubbleYang, yangPhrases, e));
+
+      /* ---------------------------------------------------------
+         4. INTERACTIVE ENVELOPE & LOVE LETTER REVEAL
+         --------------------------------------------------------- */
+      const envelopeWrapper = document.getElementById('envelope-wrapper');
+      const envelopeBox = document.getElementById('envelope-box');
+      const letterPaperWrapper = document.getElementById('letter-paper-wrapper');
+      const closeLetterBtn = document.getElementById('close-letter-btn');
+      const sendLoveBtn = document.getElementById('send-love-btn');
+
+      function openEnvelope() {
+        if (envelopeBox.classList.contains('opened')) return;
+        envelopeBox.classList.add('opened');
+
+        const rect = envelopeBox.getBoundingClientRect();
+        spawnHeartBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 22);
+
+        setTimeout(() => {
+          envelopeWrapper.style.display = 'none';
+          letterPaperWrapper.classList.add('revealed');
+          letterPaperWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 850);
+      }
+
+      envelopeBox.addEventListener('click', openEnvelope);
+      envelopeBox.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openEnvelope();
+        }
+      });
+
+      closeLetterBtn.addEventListener('click', () => {
+        letterPaperWrapper.classList.remove('revealed');
+        envelopeWrapper.style.display = 'block';
+        setTimeout(() => {
+          envelopeBox.classList.remove('opened');
+        }, 50);
+      });
+
+      sendLoveBtn.addEventListener('click', (e) => {
+        const rect = sendLoveBtn.getBoundingClientRect();
+        spawnHeartBurst(rect.left + rect.width / 2, rect.top, 26);
+        sendLoveBtn.innerHTML = '<span>Сердечко отправлено!</span><span>💖</span>';
+        setTimeout(() => {
+          sendLoveBtn.innerHTML = '<span>Отправить сердечко</span><span>❤️</span>';
+        }, 2200);
+      });
+
+      /* ---------------------------------------------------------
+         5. BACKGROUND MUSIC PLAYER ("Gangaa - Hurtlee" + Romantic Fallback)
+         --------------------------------------------------------- */
+      const musicToggleBtn = document.getElementById('music-toggle-btn');
+      const iconPlay = document.getElementById('icon-play');
+      const iconPause = document.getElementById('icon-pause');
+      const vinylDisc = document.getElementById('vinyl-disc');
+      const eqBars = document.getElementById('eq-bars');
+      const musicStatusLabel = document.getElementById('music-status-label');
+
+      let isMusicPlaying = false;
+      let ytPlayer = null;
+      let ytReady = false;
+      let fallbackAudioCtx = null;
+      let fallbackTimer = null;
+
+      // Load YouTube IFrame API for official "Gangaa - Hurtlee" (ID: LZQF1vfqEII)
+      const ytScript = document.createElement('script');
+      ytScript.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(ytScript);
+
+      window.onYouTubeIframeAPIReady = function () {
+        try {
+          ytPlayer = new YT.Player('yt-hidden-player', {
+            height: '1',
+            width: '1',
+            videoId: 'LZQF1vfqEII', // Gangaa - Hurtlee
+            playerVars: {
+              autoplay: 0,
+              loop: 1,
+              playlist: 'LZQF1vfqEII',
+              controls: 0,
+              playsinline: 1
+            },
+            events: {
+              onReady: () => {
+                ytReady = true;
+              },
+              onError: () => {
+                ytReady = false;
+                if (isMusicPlaying) startAmbientPianoFallback();
+              }
+            }
+          });
+        } catch (err) {
+          ytReady = false;
+        }
+      };
+
+      // Warm, gentle romantic piano/music-box fallback if YouTube embed is blocked offline/sandboxed
+      function startAmbientPianoFallback() {
+        if (fallbackTimer) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!fallbackAudioCtx) fallbackAudioCtx = new AudioCtx();
+        if (fallbackAudioCtx.state === 'suspended') fallbackAudioCtx.resume();
+
+        // Tender romantic arpeggio notes (Fmaj7 -> Em7 -> Dm7 -> Cmaj7)
+        const melody = [349.23, 440.00, 523.25, 659.25, 329.63, 392.00, 493.88, 587.33, 293.66, 349.23, 440.00, 523.25, 261.63, 329.63, 392.00, 493.88];
+        let step = 0;
+
+        function playNote() {
+          if (!isMusicPlaying) return;
+          const now = fallbackAudioCtx.currentTime;
+          const osc = fallbackAudioCtx.createOscillator();
+          const gain = fallbackAudioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(melody[step % melody.length], now);
+
+          gain.gain.setValueAtTime(0.001, now);
+          gain.gain.exponentialRampToValueAtTime(0.06, now + 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0008, now + 1.6);
+
+          osc.connect(gain);
+          gain.connect(fallbackAudioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 1.65);
+          step++;
+        }
+
+        playNote();
+        fallbackTimer = setInterval(playNote, 680);
+      }
+
+      function stopAmbientPianoFallback() {
+        if (fallbackTimer) {
+          clearInterval(fallbackTimer);
+          fallbackTimer = null;
+        }
+      }
+
+      function updateMusicUI(playing) {
+        isMusicPlaying = playing;
+        if (playing) {
+          iconPlay.classList.add('hidden');
+          iconPause.classList.remove('hidden');
+          vinylDisc.classList.add('vinyl-spinning');
+          eqBars.classList.add('playing');
+          musicStatusLabel.textContent = 'Сейчас играет… ♪';
+        } else {
+          iconPlay.classList.remove('hidden');
+          iconPause.classList.add('hidden');
+          vinylDisc.classList.remove('vinyl-spinning');
+          eqBars.classList.remove('playing');
+          musicStatusLabel.textContent = 'На паузе';
+        }
+      }
+
+      function toggleMusic(forcePlay = null) {
+        const shouldPlay = forcePlay !== null ? forcePlay : !isMusicPlaying;
+
+        if (shouldPlay) {
+          updateMusicUI(true);
+          if (ytReady && ytPlayer && typeof ytPlayer.playVideo === 'function') {
+            ytPlayer.setVolume(75);
+            ytPlayer.playVideo();
+            // Also verify playback started; if iframe is restricted in preview, engage gentle music-box
+            setTimeout(() => {
+              if (isMusicPlaying && ytPlayer.getPlayerState && ytPlayer.getPlayerState() !== 1) {
+                startAmbientPianoFallback();
+              }
+            }, 1400);
+          } else {
+            startAmbientPianoFallback();
+          }
+        } else {
+          updateMusicUI(false);
+          if (ytReady && ytPlayer && typeof ytPlayer.pauseVideo === 'function') {
+            ytPlayer.pauseVideo();
+          }
+          stopAmbientPianoFallback();
+        }
+      }
+
+      musicToggleBtn.addEventListener('click', () => toggleMusic());
+    })();
+  </script>
+</body>
+</html>
